@@ -1,0 +1,75 @@
+Mirror X Codex v1.2.45 PUBLIC-FINAL 转发安装说明
+
+这不是仅限制作机器使用的版本。安装包按当前 Windows 用户安装，不包含制作机器的路径、登录态、API Key、服务器 SSH 凭据或 Codex 会话。
+
+一、适用范围
+
+- 正式支持：已更新的 Windows 11 x64。
+- 尽力支持：Windows 10 1809 及以上 x64，且系统组件已更新。
+- 暂不支持：Windows ARM64 原生版、32 位 Windows、被大幅裁剪的系统。
+- 管理器依赖 Microsoft Edge WebView2 Runtime。标准 Windows 11 通常已自带；精简版、LTSC 或较旧系统缺失时，需先安装官方 WebView2 Runtime。
+- 安装器按用户安装，不要求管理员权限。企业安全策略仍可能禁止运行未签名程序。
+
+二、安装
+
+1. 先解压整个 ZIP，不要直接在压缩软件里运行。
+2. 核对 SHA256SUMS.txt。
+3. 双击名称以 setup.exe 结尾的安装程序。
+4. 安装完成页可直接打开 Mirror X Codex 管理器。
+5. SmartScreen 显示“未知发布者”时，先确认文件来源和 SHA-256；本版本尚未使用商业 Authenticode 证书签名。
+
+三、第一次接入
+
+1. 管理器先做本机预检。配置损坏、Codex 正在运行、目录不可写或磁盘空间不足时，会阻止应用，不会用默认值覆盖未知状态。
+2. 没有官方 Codex 时可点“自动安装 Codex”。winget 不可用时会尝试打开 Microsoft Store；两者都不可用时，请从官方渠道安装，再手动选择 ChatGPT.exe、Codex.exe 或应用目录。
+3. 至少填写并验证一个文本 Key：CodexPro Key 或“企业GPT专线（极稳）”Key。两个分组可以只用一个，也可以同时使用。
+4. 每个已填写的 Key 必须单独验证、勾选它负责的模型，并从所有已选模型中指定一个默认模型。同一模型不能同时分配给两个 Key。
+5. Image Key 是可选项。只用文本模型时保持“镜子AI生图”关闭即可；启用生图时才需要验证 gpt-image-2 权限。
+6. “混合 API”需要本机 Codex 已有有效的 ChatGPT 官方登录；“纯 API”不要求官方登录，全部模型请求通过填写的镜子AI Key。
+7. 应用前必须完全退出 Codex。点击“应用接入”后，看到完整生效，再从管理器点击“打开 Codex”。
+
+四、Key 不齐时会怎样
+
+- 没有 CodexPro Key，但有企业专线 Key：可以使用企业专线。
+- 没有企业专线 Key，但有 CodexPro Key：可以使用 CodexPro。
+- 两个文本 Key 都没有：不能应用接入，界面会要求至少填写并验证一个分组 Key。
+- 没有 Image Key：文本对话不受影响；不要开启生图功能。
+- Key 填了但未验证、验证失败、没有勾选模型或默认模型无效：不能应用，原 Codex 配置不写入。
+- 混合 API 没有官方登录：不能应用混合模式；可先登录官方 Codex，或改用纯 API。
+
+五、本版本针对 Provider 问题的处理
+
+- 纯 API 会写入明确的 custom Provider 及对应 [model_providers.custom] 表，写后立即回读校验。
+- 混合 API 会保留官方登录，并使用已验证的 Provider；Profile 信息缺失时会从实时 config.toml 恢复，但不存在真实 Provider 表时会拒绝错误配置。
+- 模型目录会保留 Responses API 完整能力，不再错误切到 Lite catalog。
+- 如果仍看到“Model provider custom not found”或模型不可选，优先确认没有误装旧 ZIP。完全退出 Codex，在管理器中恢复使用前状态，再用本 PUBLIC-FINAL 包重新应用；不要手工删除 .codex。
+
+六、配置、会话与恢复
+
+- 第一次成功接入前会创建受保护基线；写入采用快照、临时文件、回读确认和失败回滚。
+- 会保留并同步原有会话、rollout、SQLite、MCP、Skill 和插件相关配置；异常或文件占用时会停止并给出恢复提示。
+- 低磁盘空间、损坏配置、锁占用和中断升级均按“先保留旧状态，再停止”处理。
+- 要撤销接入，使用管理器中的“恢复使用前状态”。不要手工删除 config.toml、auth.json、会话目录或 SQLite 文件。
+- 卸载程序会先调用恢复流程；恢复失败时会中止卸载并保留程序和恢复数据。
+
+七、数据与服务器说明
+
+- 已删除“服务器账号自动填入”功能，也没有 Claude Key 入口。
+- 安装包不内置任何用户 Key、服务器账号、SSH 密码或私钥。
+- 收件人填写的 Key 会保存在其本机 Manager/Codex 配置中，并只在验证和模型请求时发送给所配置的 API 地址。请只在可信设备上使用。
+- 手机远程控制默认关闭；远程插件仍需插件自身的账号或 OAuth，纯 API 不会绕过第三方登录。
+
+八、已验证与边界
+
+- Rust：999 passed，0 failed，2 ignored。
+- 前端：21 passed，0 failed；TypeScript 检查与生产构建通过。
+- Pure/Mixed Provider、回滚、低磁盘、损坏配置、历史同步、插件、安装器事务和无 Codex 分支均有隔离测试。
+- 安装器内三枚 EXE 与最新 Release SHA-256 完全一致，均为 Windows x64，未依赖外置 VC++ Runtime。
+- 当前机器未启用 Windows Sandbox，因此未在本轮用全新 Windows 虚拟机和真实客户 Key 执行一次现场安装到回复的完整链路。不要宣传为“所有 Windows 组合 100% 无条件可用”。
+
+九、遇到问题时
+
+1. 记录错误原文和管理器状态，不要先删文件。
+2. 完全退出 Codex，再点“重新检测”或“重试会话修复”。
+3. 仍失败时先点“恢复使用前状态”。
+4. 提供 Windows 版本、是否有 WebView2、Codex 安装来源、所选模式和错误截图；不要发送明文 Key、auth.json 或服务器密码。

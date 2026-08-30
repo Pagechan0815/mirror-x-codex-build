@@ -1,0 +1,18 @@
+{
+  "name": "Mirror X Codex",
+  "short_name": "Mirror X",
+  "start_url": "/relay/mobile",
+  "scope": "/relay/",
+  "display": "standalone",
+  "background_color": "#f4f6f5",
+  "theme_color": "#f4f6f5",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/relay/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

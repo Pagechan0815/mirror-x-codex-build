@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<script>
+if (/Android|HarmonyOS|OpenHarmony/i.test(navigator.userAgent || "")) {
+  document.getElementById("viewportMeta").content += ", interactive-widget=resizes-content";
+}
+</script>
+<meta name="theme-color" content="#f4f6f5" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Mirror X Codex</title>
+  <link rel="icon" href="/relay/icon.svg?v=20260821-15" type="image/svg+xml" />
+<link rel="manifest" href="/relay/manifest.json" />
+  <link rel="stylesheet" href="/relay/style.css?v=20260821-15" />
+</head>
+<body data-phase="setup">
+<header class="topbar">
+  <button id="menuBtn" class="icon-button menu-button" type="button" aria-label="打开导航"
+          aria-controls="sidebar" aria-expanded="false" hidden>
+    <svg class="ui-icon menu-icon-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+    <svg class="ui-icon menu-icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  </button>
+  <div class="brand">
+    <img class="brand-icon" src="/relay/icon.svg?v=20260821-15" alt="" aria-hidden="true" />
+    <span>
+      <strong>Mirror X Codex</strong>
+      <small id="workspaceLabel">手机工作台</small>
+    </span>
+  </div>
+  <span id="topRuntime" class="top-runtime" role="status" aria-live="polite" hidden>
+    <i class="runtime-spinner" aria-hidden="true"></i>
+    <span id="topRuntimeText">执行中</span>
+  </span>
+  <span id="statusText" class="status-dot" role="status" aria-live="polite">准备就绪</span>
+</header>
+
+<main class="stage">
+  <section data-screen="setup" class="screen setup active">
+    <div class="setup-logo">
+      <img class="setup-logo-icon" src="/relay/icon.svg?v=20260821-15" alt="" aria-hidden="true" />
+      <h1>连接 Mirror X Codex</h1>
+      <p>继续当前项目与历史会话。</p>
+    </div>
+    <form id="connectForm" class="form-card">
+      <div>
+        <label class="form-label" for="apiKeyInput">镜子AI API Key</label>
+        <div class="input-wrap">
+          <input id="apiKeyInput" type="password" autocomplete="off" spellcheck="false"
+                 placeholder="sk-..." aria-label="API Key" />
+          <button id="eyeBtn" class="input-eye" type="button" aria-label="显示或隐藏 Key">显示</button>
+        </div>
+      </div>
+      <button id="connectBtn" class="btn-primary" type="button" disabled>连接电脑</button>
+      <p id="setupError" class="setup-error" hidden></p>
+      <a class="key-link" href="https://api.jingziai.club/panel/token" target="_blank" rel="noopener">
+        前往镜子AI获取 Key
+      </a>
+    </form>
+    <div class="setup-assurance" aria-label="连接属性">
+      <span><i class="assurance-dot encrypted" aria-hidden="true"></i>端到端加密</span>
+      <span><i class="assurance-dot local" aria-hidden="true"></i>仅连接当前电脑</span>
+      <span><i class="assurance-dot reversible" aria-hidden="true"></i>可随时断开</span>
+    </div>
+  </section>
+
+  <section data-screen="connecting" class="screen connecting">
+    <div class="spinner"></div>
+    <strong id="connectingTitle">正在连接…</strong>
+    <span id="connectingDetail">建立端对端加密通道</span>
+    <button id="retryConnectBtn" class="retry-connect-button" type="button" hidden>立即重试</button>
+    <button id="changeKeyBtn" class="change-key-button" type="button">退出并清除配对</button>
+  </section>
+
+  <section data-screen="workspace" class="screen workspace-screen">
+    <div id="drawerBackdrop" class="drawer-backdrop" aria-hidden="true"></div>
+    <aside id="sidebar" class="sidebar" aria-label="工作台导航" tabindex="-1">
+      <div class="sidebar-head">
+        <div>
+          <strong>我的电脑</strong>
+          <span id="sidebarStatus">已建立加密连接</span>
+        </div>
+        <button id="closeMenuBtn" class="icon-button mobile-only" type="button" aria-label="关闭导航">
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+      <div id="sidebarRuntime" class="sidebar-runtime" hidden>
+        <span class="runtime-orb"><i class="runtime-spinner" aria-hidden="true"></i></span>
+        <span><strong id="sidebarRuntimeTitle">Codex 正在工作</strong><small id="sidebarRuntimeText">1 个任务执行中</small></span>
+      </div>
+
+      <nav class="nav-tabs" aria-label="工作台导航">
+        <button class="nav-tab active" data-panel="history" type="button"><span aria-hidden="true"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M12 7v5l3 2" /></svg></span>历史会话<b id="historyRunBadge" class="nav-run-badge" hidden>1</b></button>
+        <button class="nav-tab" data-panel="files" type="button"><span aria-hidden="true"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 5h14v14H5zM8 9h8M8 12h8M8 15h5" /></svg></span>项目文件</button>
+        <button class="nav-tab" data-panel="projects" type="button"><span aria-hidden="true"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 8h14v11H5zM8 5h8l2 3H6z" /></svg></span>项目<b id="projectRunBadge" class="nav-run-badge" hidden>1</b></button>
+      </nav>
+
+      <section id="historyPanel" class="side-panel active">
+        <div class="panel-tools">
+          <label class="search-box">
+              <span class="search-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.2" /><path d="M15.5 15.5L20 20" /></svg></span>
+            <input id="threadSearch" type="search" placeholder="搜索历史会话" />
+          </label>
+          <button id="refreshBtn" class="icon-button" type="button" aria-label="刷新">
+            <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a7.5 7.5 0 10.7 6.5" /><path d="M19 4v4h-4" /></svg>
+          </button>
+        </div>
+        <div id="historyNotice" class="sync-notice">正在读取本机历史…</div>
+        <div id="threadList" class="history-list"></div>
+        <button id="loadMoreBtn" class="load-more" type="button" hidden>加载更多历史</button>
+      </section>
+
+      <section id="filesPanel" class="side-panel">
+        <div class="panel-heading">
+          <div>
+            <strong id="fileProjectName">选择一个项目</strong>
+            <span id="fileProjectPath">打开历史会话后显示项目文件</span>
+          </div>
+          <button id="reloadFilesBtn" class="icon-button" type="button" aria-label="刷新文件">
+            <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a7.5 7.5 0 10.7 6.5" /><path d="M19 4v4h-4" /></svg>
+          </button>
+        </div>
+        <div id="fileTree" class="file-tree">
+          <p class="side-empty">先从“历史会话”或“项目”中选择一个项目。</p>
+        </div>
+      </section>
+
+      <section id="projectsPanel" class="side-panel">
+        <div class="panel-heading">
+          <div><strong>项目</strong><span>按本机会话目录自动整理</span></div>
+        </div>
+        <div id="projectList" class="project-list"></div>
+      </section>
+
+      <div class="sidebar-footer">
+        <button id="newThreadBtn" class="new-thread" type="button">＋ 新建会话</button>
+        <button id="disconnectBtn" class="disconnect-button" type="button">暂时断开</button>
+      </div>
+    </aside>
+
+    <section class="conversation">
+      <div class="conversation-head">
+        <div class="conversation-title">
+          <strong id="threadTitle">历史会话</strong>
+          <span id="threadMeta">选择左侧会话继续工作</span>
+        </div>
+        <button id="syncStatusBtn" class="sync-status" type="button" aria-label="刷新当前会话" hidden>
+          <i class="sync-status-icon" aria-hidden="true"></i>
+          <span id="syncStatusText">等待同步</span>
+        </button>
+        <button id="interruptBtn" class="stop-button" type="button" hidden>停止</button>
+      </div>
+
+      <div id="welcome" class="welcome">
+        <img class="welcome-mark" src="/relay/icon.svg?v=20260821-15" alt="" aria-hidden="true" />
+        <h2>继续你的项目</h2>
+        <p>选择会话或项目开始。</p>
+      </div>
+      <div id="messages" class="messages" hidden></div>
+
+      <button id="jumpLatestBtn" class="jump-latest" type="button" hidden><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg><span>有新回复</span></button>
+      <div class="composer">
+        <button id="takeoverBtn" class="takeover-button" type="button" hidden>在此设备重新接管</button>
+        <div id="activityBar" class="activity-bar" role="status" aria-live="polite" hidden>
+          <span class="activity-spinner" aria-hidden="true"></span>
+          <span id="activityText">正在工作</span>
+          <button id="activityDetailsBtn" type="button" aria-expanded="false">查看详情</button>
+        </div>
+        <div id="activityDetails" class="activity-details" aria-live="polite" hidden></div>
+        <div id="attachmentList" class="attachment-list" aria-live="polite" hidden></div>
+        <div class="composer-inner">
+          <input id="attachmentInput" type="file" multiple
+                 accept="image/*,video/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip"
+                 aria-label="选择图片、视频或文件" hidden />
+          <button id="attachmentBtn" class="btn-attach" type="button"
+                  aria-label="添加图片、视频或文件" title="添加附件" disabled>
+            <span class="attach-orb" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M8.6 12.9l5.8-5.8a3.2 3.2 0 014.5 4.5l-7.5 7.5a5 5 0 01-7.1-7.1l7.1-7.1" />
+                <path d="M7.2 15.8l7.4-7.4" />
+                <path class="attach-plus" d="M18.2 3.2v4.6M15.9 5.5h4.6" />
+              </svg>
+            </span>
+            <span id="attachmentCount" class="attach-count" aria-hidden="true" hidden>0</span>
+          </button>
+          <textarea id="messageInput" rows="1" placeholder="给 Codex 输入任务…" aria-label="消息"
+                    enterkeyhint="send" autocapitalize="sentences" disabled></textarea>
+          <button id="sendBtn" class="btn-send" type="button" aria-label="发送" disabled>
+            <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="fileViewer" class="file-viewer" role="dialog" aria-labelledby="fileViewerName"
+             aria-describedby="fileViewerPath" aria-hidden="true" tabindex="-1" hidden>
+      <div class="file-viewer-head">
+        <div><strong id="fileViewerName">文件</strong><span id="fileViewerPath"></span></div>
+        <div class="file-viewer-actions">
+          <button id="fileSourceBtn" class="file-source-toggle" type="button" hidden>查看源码</button>
+          <button id="closeFileBtn" class="icon-button" type="button" aria-label="关闭文件">
+            <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+      </div>
+      <div id="fileContent" class="file-content"></div>
+    </section>
+  </section>
+</main>
+
+<div class="toast-area" id="toastArea"></div>
+<span class="build-version" aria-hidden="true">v20260821.15</span>
+<script type="module" src="/relay/app.js?v=20260821-15"></script>
+</body>
+</html>

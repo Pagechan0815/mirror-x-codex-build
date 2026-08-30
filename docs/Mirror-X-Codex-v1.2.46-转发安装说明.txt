@@ -1,0 +1,62 @@
+Mirror X Codex v1.2.46 PUBLIC-FINAL-v21 转发安装说明
+
+本包可转发给其他 Windows 用户，不是仅制作机可用的私有版本。安装和配置都按收件人当前 Windows 账户解析；包内不含制作机路径、登录态、API Key、服务器 SSH 凭据、私钥或 Codex 会话。
+
+一、适用范围
+
+- 正式支持：已完成系统更新的 Windows 11 x64。
+- 尽力支持：Windows 10 1809 及以上 x64，且系统组件已更新。
+- 暂不支持：Windows ARM64 原生版、32 位 Windows、被大幅精简的系统。
+- 管理器需要 Microsoft Edge WebView2 Runtime。安装器会先检测；缺失时使用 Microsoft 官方安装器，失败则保留旧版并打开官方页面。
+- 这是未签名公开版。SmartScreen 或企业策略可能拦截；运行前应核对 SHA256SUMS.txt。
+
+二、安装
+
+1. 先完整解压 ZIP，不要在压缩软件内直接运行。
+2. 用 PowerShell 执行 Get-FileHash -Algorithm SHA256 并与 SHA256SUMS.txt 比对。
+3. 双击名称以 setup.exe 结尾的安装程序。Mirror X Codex 本体按当前用户安装，正常情况不主动请求提权；但 WebView2、Codex 安装/更新或企业策略可能需要系统管理员批准。
+4. 如 SmartScreen 显示“未知发布者”，只在文件来源可信且 SHA-256 完全匹配时继续。
+5. 安装完成后打开 Mirror X Codex 管理器，先让它完成本机预检。
+
+三、Codex 与完整文件能力
+
+- 已安装 Codex：管理器会实时检测 Store/Standalone 安装及真实绑定 CLI。
+- 没有 Codex：可点“自动安装 Codex”。流程为 winget -> Microsoft Store -> 官方页面/手动选择真实 ChatGPT.exe 或 Codex.exe。
+- Codex 过旧：管理器会引导官方更新，完成后返回点“重新检测”。
+- 应用接入前必须通过 Codex 官方 Full access readiness 检查，避免会话只能读取而不能修改工作区。管理器可在系统允许时完成设置和回读确认。
+- 如显示 policy_blocked，表示 Windows/组织策略明确禁止 Full access。软件不会伪装成功或绕过组织策略；需由设备管理员放行，否则该设备不在“完整功能”支持范围。
+- 配置损坏、Codex 正在运行、磁盘空间不足、目录不可写或 CODEX_HOME 异常时，会阻止写入并给出下一步，不会用默认值覆盖未知状态。
+
+四、Key 和模式
+
+1. 至少填写并验证一个文本 Key：CodexPro Key 或“企业 GPT 专线（极稳）”Key。两个分组可只用其一，也可同时使用。
+2. 每个已填 Key 都必须单独验证，再勾选它负责的模型。所有已选模型中必须指定一个默认模型，同一模型不能重复分配给两个 Key。
+3. Image Key 只在启用“镜子 AI 生图”时需要；纯文本使用可不填。启用生图前会验证对应图像模型权限。
+4. 纯 API：不需要官方 ChatGPT 登录；文本模型请求全部通过已验证 Key。
+5. 混合 API：保留本机已有官方 ChatGPT 登录；未确认登录时不允许应用，可先在官方 Codex 登录或改用纯 API。
+6. 本版已删除“服务器账号自动填入”和 Claude Key 入口，不会自动向收件人发放任何 Key。
+
+五、应用、启动与恢复
+
+1. 应用前完全退出 Codex；管理器检测到 Codex 运行时会拒绝写入。
+2. 点“应用接入”。系统会先创建与当前 CODEX_HOME 绑定的基线，再事务写入 config/auth/catalog 并立即回读。任一步失败即恢复本次前状态。
+3. 只有管理器显示完整生效后，才从管理器点“打开 Codex”。重复打开 Manager 会唤醒已有窗口，不会再启一套写入流程。
+4. 纯 API 会写入可解析的 custom Provider 表；启动前再检查并在可恢复条件下修复，用于阻止 Model provider `custom` not found 和空模型目录。
+5. 系统不会主动删除现有会话、rollout、SQLite、MCP、Skill 或插件配置；会先备份再尝试按原属主保留/同步。插件市场缺失时会初始化必需市场；损坏、锁占用或并发变化时会保留原字节并返回 Partial/Degraded，需按提示修复后再完成。
+6. 要撤销时使用“恢复使用前状态”，不要手动删除 .codex、config.toml、auth.json、SQLite 或会话目录。
+7. 恢复点与创建它的 CODEX_HOME 绑定。如环境变量改到另一目录，恢复会停止且两个目录均不修改；切回原 CODEX_HOME 完成恢复后，才可在新目录开始新接入周期。
+8. 卸载会先调用恢复流程；恢复失败时会中止卸载，保留程序与恢复数据。
+
+六、发给别人时必须一起说明
+
+- 收件人必须使用自己有权使用的 Key，并保证其网络能访问对应 API。
+- 请只转发当前 v1.2.46 PUBLIC-FINAL-v21 ZIP，并以随包 SHA256SUMS.txt 为准。此前生成的所有 v1.2.45/v1.2.46 测试包、RC 包和修复包均已作废，不得混用。
+- 本包尚无 Authenticode 签名，不应宣传为“所有 Windows/所有企业策略 100% 无条件可用”。
+- 正式支持范围内，自动化逻辑、配置回滚和安装器完整性已验证；但大规模公开发布前仍建议在一台全新 Windows 11 x64 和一台 Windows 10 x64 上用测试 Key 完成 Pure/Mixed 安装到恢复的现场验收。
+
+七、出现问题时
+
+1. 保留错误原文、Windows 版本、Codex 安装来源和所选模式，不要先删文件。
+2. 完全退出 Codex，返回管理器点“重新检测”。
+3. 仍失败时使用“恢复使用前状态”；如恢复被 CODEX_HOME 绑定阻止，先恢复原环境变量目录。
+4. 可提供错误截图和脱敏日志；禁止发送明文 Key、auth.json、服务器密码或私钥。

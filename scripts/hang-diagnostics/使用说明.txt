@@ -1,0 +1,11 @@
+必须在 Codex 仍然显示“正在思考”时运行。
+
+1. 解压整个 ZIP。
+2. 不要关闭卡住的 Codex。
+3. 双击 Run-While-Codex-Is-Stuck.cmd。
+4. 等待检测完成，最多约 3 分钟。
+5. 桌面会生成 mirror-codex-hang-report.txt。
+6. 把该 TXT 文件发回来。
+
+检测包不会结束 Codex、不会修改配置、不会显示 API Key。
+检测会发送两个极小的模型测试请求，用于分别判断普通响应和流式响应是否正常。

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Mirror X Codex">
+  <rect width="192" height="192" rx="32" fill="#17232d"/>
+  <path d="M45 133V58h18l33 48 33-48h18v75h-17V84l-34 49-34-49v49z" fill="#f7fafc"/>
+  <path d="M150 37l5 12 12 5-12 5-5 12-5-12-12-5 12-5z" fill="#4f8ff0"/>
+  <circle cx="42" cy="151" r="8" fill="#21a39b"/>
+  <path d="M55 151h67" stroke="#d36b4e" stroke-width="6" stroke-linecap="round"/>
+</svg>

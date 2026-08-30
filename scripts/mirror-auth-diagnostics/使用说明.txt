@@ -1,0 +1,11 @@
+Mirror X Codex 鉴权诊断
+
+1. 解压整个 ZIP。
+2. 双击 Run-Diagnostics.cmd。
+3. 等待窗口执行结束。
+4. 桌面会生成 mirror-auth-report.txt。
+5. 把这个 txt 文件发回来。
+
+脚本不会显示或保存 API Key 明文，只输出不可逆的 12 位 SHA-256 短指纹。
+脚本会按照 Codex 最终配置发送一次极小的 /v1/responses 测试请求。
+

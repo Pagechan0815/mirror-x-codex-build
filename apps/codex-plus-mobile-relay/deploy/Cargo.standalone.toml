@@ -1,0 +1,25 @@
+# Standalone manifest used only for server-side builds. The relay depends on no
+# workspace crates, so it can be compiled on its own without shipping the whole
+# repository (and without any Windows-only dependencies).
+[package]
+name = "codex-plus-mobile-relay"
+version = "1.2.57"
+edition = "2024"
+license = "AGPL-3.0"
+
+[[bin]]
+name = "codex-plus-mobile-relay"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+futures-util = { version = "0.3", features = ["sink"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time", "io-util"] }
+tokio-tungstenite = { version = "0.26", features = ["rustls-tls-webpki-roots"] }
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1

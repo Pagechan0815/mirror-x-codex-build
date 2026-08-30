@@ -1,0 +1,8 @@
+interface:
+  display_name: "镜子AI 生图"
+  short_description: "直接描述画面，自动生成并保存项目图片"
+  icon_small: "./assets/imagegen-small.svg"
+  icon_large: "./assets/imagegen.png"
+  default_prompt: "Use $jingzi-imagegen to generate the requested image, save it in this project, and show the result."
+policy:
+  allow_implicit_invocation: true

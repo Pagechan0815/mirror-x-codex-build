@@ -1,0 +1,16 @@
+[Unit]
+Description=Mirror X Codex Mobile Relay
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/mirror-x-relay
+Environment="CODEX_PLUS_MOBILE_RELAY_BIND=127.0.0.1:8765"
+Environment="CODEX_PLUS_MOBILE_RELAY_TRUSTED_PROXIES=127.0.0.1,::1"
+ExecStart=/root/mirror-x-relay/codex-plus-mobile-relay
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
