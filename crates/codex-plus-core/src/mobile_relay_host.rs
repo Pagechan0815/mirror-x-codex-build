@@ -1847,17 +1847,25 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn windows_candidate_selection_prefers_non_windowsapps_entries() {
-        let selected = select_windows_codex_candidate([
-            r"C:\Program Files\WindowsApps\OpenAI.Codex_26.803.10989.0_x64__2p2nqsd0c76g0\app\resources\codex.exe",
-            r"C:\Users\Administrator\.trae-cn\binaries\node\versions\22.17.1\codex.cmd",
-        ])
-        .unwrap();
-        assert_eq!(
-            selected,
-            std::path::PathBuf::from(
-                r"C:\Users\Administrator\.trae-cn\binaries\node\versions\22.17.1\codex.cmd"
-            )
-        );
+        let temp = tempfile::tempdir().unwrap();
+        let windowsapps = temp
+            .path()
+            .join("WindowsApps")
+            .join("OpenAI.Codex_test")
+            .join("app")
+            .join("resources")
+            .join("codex.exe");
+        let regular = temp.path().join("bin").join("codex.cmd");
+        std::fs::create_dir_all(windowsapps.parent().unwrap()).unwrap();
+        std::fs::create_dir_all(regular.parent().unwrap()).unwrap();
+        std::fs::write(&windowsapps, b"windowsapps").unwrap();
+        std::fs::write(&regular, b"regular").unwrap();
+
+        let windowsapps = windowsapps.to_string_lossy().into_owned();
+        let regular_text = regular.to_string_lossy().into_owned();
+        let selected =
+            select_windows_codex_candidate([windowsapps.as_str(), regular_text.as_str()]).unwrap();
+        assert_eq!(selected, regular);
     }
 
     #[cfg(windows)]
